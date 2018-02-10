@@ -35,6 +35,8 @@ namespace aplimat_labs
         private Randomizer rng = new Randomizer(-20, 20);
         private Randomizer colorRNG = new Randomizer(-255, 255);
 
+        private CubeMesh myCube = new CubeMesh();
+        private Vector3 velocity = new Vector3(1, 1, 0);
         private void OpenGLControl_OpenGLDraw(object sender, SharpGL.SceneGraph.OpenGLEventArgs args)
         {
             OpenGL gl = args.OpenGL;
@@ -46,15 +48,30 @@ namespace aplimat_labs
             gl.LoadIdentity();
             gl.Translate(0.0f, 0.0f, -40.0f);
 
-            CubeMesh myCube = new CubeMesh();
-            myCube.Position = new Vector3(Gaussian.Generate(0, 15), rng.GenerateInt(), 0);
-            myCubes.Add(myCube);
+            myCube.Draw(gl);
+            myCube.Position += velocity;
 
-            foreach (CubeMesh cube in myCubes)
+            //Bounce
+            if(myCube.Position.x >= 25.0f)
             {
-                cube.Draw(gl);
-                gl.Color(colorRNG.GenerateDouble(),colorRNG.GenerateDouble(),colorRNG.GenerateDouble());
+                velocity.x = -1;
             }
+            else if(myCube.Position.x <= -25.0f)
+            {
+                velocity.x = 1;
+            }
+
+            if (myCube.Position.y >= 10.0f)
+            {
+                velocity.y = -1;
+
+            }
+            else if (myCube.Position.y <= -10.0f)
+            {
+                velocity.y = 1;
+
+            }
+
 
             //myCube.Position += new Vector3(rng.GenerateInt(), rng.GenerateInt(), rng.GenerateInt());
             //myCube.Draw(gl);
