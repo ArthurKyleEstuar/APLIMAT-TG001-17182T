@@ -16,6 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+
 namespace aplimat_labs
 {
     /// <summary>
@@ -26,6 +27,8 @@ namespace aplimat_labs
         public MainWindow()
         {
             InitializeComponent();
+            myVector = a - b;
+            Console.WriteLine(myVector.GetMagnitude());
 
             //while (true) Console.WriteLine(rng.Generate());
         }
@@ -37,45 +40,77 @@ namespace aplimat_labs
 
         private CubeMesh myCube = new CubeMesh();
         private Vector3 velocity = new Vector3(1, 1, 0);
+        private float speed = 5.0f;
+
+        private Vector3 myVector = new Vector3();
+        private Vector3 a = new Vector3(5, 7, 0);
+        private Vector3 b = new Vector3(0, 0, 0);
+
+
+      
+
         private void OpenGLControl_OpenGLDraw(object sender, SharpGL.SceneGraph.OpenGLEventArgs args)
         {
             OpenGL gl = args.OpenGL;
-
+           
             // Clear The Screen And The Depth Buffer
             gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
 
+            double mouseX = Mouse.GetPosition(Application.Current.MainWindow).X;
+            double mouseY = Mouse.GetPosition(Application.Current.MainWindow).Y;
             // Move Left And Into The Screen
             gl.LoadIdentity();
             gl.Translate(0.0f, 0.0f, -40.0f);
 
-            myCube.Draw(gl);
-            myCube.Position += velocity;
 
-            //Bounce
-            if(myCube.Position.x >= 25.0f)
+
+
+            gl.Color(255.0, 255.0, 255.0);
+       
+            gl.Begin(OpenGL.GL_LINE_STRIP);
+            gl.Vertex(a.x, a.y, a.z);
+            gl.Vertex(mouseX, mouseY, 0);
+            gl.End();
+
+            gl.Color(0.0, 0.0, 255.0);
+            gl.LineWidth(15);
+            gl.Begin(OpenGL.GL_LINE_STRIP);
+            gl.Vertex(a.x, a.y, a.z);
+            gl.Vertex(mouseX, mouseY, 0);
+            gl.End();
+
+            
+            if (Keyboard.IsKeyDown(Key.W))
             {
-                velocity.x = -1;
+                a.x *= 2;
+               
             }
-            else if(myCube.Position.x <= -25.0f)
+            if(Keyboard.IsKeyDown(Key.S))
             {
-                velocity.x = 1;
+                a.x /= 2;
+               
             }
-
-            if (myCube.Position.y >= 10.0f)
+            if(Keyboard.IsKeyDown(Key.A))
             {
-                velocity.y = -1;
-
+                a.y *= 2;
             }
-            else if (myCube.Position.y <= -10.0f)
+            if(Keyboard.IsKeyDown(Key.D))
             {
-                velocity.y = 1;
-
+                a.y /= 2;
             }
 
+            
+
+            gl.DrawText(0, 0, 1, 1, 1, "Arial", 15, "myVector's magnitude is " + a.GetMagnitude());
+
+
+           
 
             //myCube.Position += new Vector3(rng.GenerateInt(), rng.GenerateInt(), rng.GenerateInt());
             //myCube.Draw(gl);
         }
+
+       
 
         private void OpenGLControl_OpenGLInitialized(object sender, SharpGL.SceneGraph.OpenGLEventArgs args)
         {
