@@ -27,29 +27,19 @@ namespace aplimat_labs
         public MainWindow()
         {
             InitializeComponent();
-            myVector = a - b;
-            Console.WriteLine(myVector.GetMagnitude());
 
             //while (true) Console.WriteLine(rng.Generate());
         }
-        private List<CubeMesh> myCubes = new List<CubeMesh>();
-        //private CubeMesh myCube = new CubeMesh();
 
-        private Randomizer rng = new Randomizer(-20, 20);
-        private Randomizer colorRNG = new Randomizer(-255, 255);
-
-        private Vector3 myVector = new Vector3();
-        private Vector3 a = new Vector3(5, 7, 0);
-        private Vector3 b = new Vector3(0, 0, 0);
+        private CubeMesh mover = new CubeMesh(-25, 0, 0);
+        private Vector3 acceleration = new Vector3(0.01f, 0.0f, 0.0f);
         private Vector3 mousePos = new Vector3();
-
-
-      
+        private int frameCount = 0;
 
         private void OpenGLControl_OpenGLDraw(object sender, SharpGL.SceneGraph.OpenGLEventArgs args)
         {
             OpenGL gl = args.OpenGL;
-           
+            bool bounced = false;
             // Clear The Screen And The Depth Buffer
             gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
 
@@ -58,85 +48,39 @@ namespace aplimat_labs
             gl.LoadIdentity();
             gl.Translate(0.0f, 0.0f, -40.0f);
 
+            mover.Draw(gl);
+            mover.Velocity += acceleration;
+            frameCount++;
 
-            mousePos.Normalize();
-            mousePos *= 10;
-
-
-            //blue
-            gl.Color(1.0f, 1.0f, 1.0f, 0.2f);
-            gl.LineWidth(15);
-            gl.Begin(OpenGL.GL_LINE_STRIP);
-            gl.Vertex(0, 0, 0);
-            gl.Vertex(mousePos.x, mousePos.y, 0);
-            gl.End();
-
-            gl.Color(0.0f, 0.0f, 1.0f);
-            gl.LineWidth(5);
-            gl.Begin(OpenGL.GL_LINE_STRIP);
-            gl.Vertex(0, 0, 0);
-            gl.Vertex(mousePos.x, mousePos.y, 0);
-            gl.End();
-
-            //red
-            gl.Color(1.0f, 1.0f, 1.0f, 0.2f);
-            gl.LineWidth(15);
-            gl.Begin(OpenGL.GL_LINE_STRIP);
-            gl.Vertex(10, 10, 0);
-            gl.Vertex(mousePos.x, mousePos.y, 0);
-            gl.End();
-
-            gl.Color(1.0f, 0.0f, 0.0f);
-            gl.LineWidth(5);
-            gl.Begin(OpenGL.GL_LINE_STRIP);
-            gl.Vertex(10, 10, 0);
-            gl.Vertex(mousePos.x, mousePos.y, 0);
-            gl.End();
-
-            //green
-            gl.Color(1.0f, 1.0f, 1.0f, 0.2f);
-            gl.LineWidth(15);
-            gl.Begin(OpenGL.GL_LINE_STRIP);
-            gl.Vertex(10, 10, 0);
-            gl.Vertex(mousePos.x, mousePos.y, 0);
-            gl.End();
-
-            gl.Color(0.0f, 1.0f, 0.0f);
-            gl.LineWidth(5);
-            gl.Begin(OpenGL.GL_LINE_STRIP);
-            gl.Vertex(0, 0, 0);
-            gl.Vertex(10, 10, 0);
-            gl.End();
-
-
-            if (Keyboard.IsKeyDown(Key.W))
+            if (mover.Position.x >= 25)
             {
-                a.x *= 2;
-               
-            }
-            if(Keyboard.IsKeyDown(Key.S))
-            {
-                a.x /= 2;
-               
-            }
-            if(Keyboard.IsKeyDown(Key.A))
-            {
-                a.y *= 2;
-            }
-            if(Keyboard.IsKeyDown(Key.D))
-            {
-                a.y /= 2;
+ 
+                mover.Velocity.x *= -1;
+                acceleration = new Vector3(0.02f, 0.0f, 0.0f);//this will be my boolean
             }
 
-            
-
-            gl.DrawText(0, 0, 1, 1, 1, "Arial", 15, "myVector's magnitude is " + a.GetMagnitude());
-
+            if (acceleration.x == 0.02f) mover.Velocity.Clamp(0);
 
            
 
-            //myCube.Position += new Vector3(rng.GenerateInt(), rng.GenerateInt(), rng.GenerateInt());
-            //myCube.Draw(gl);
+            if (frameCount >= 200)
+            {//reset application
+                frameCount = 0;
+                mover.Position.x = -25.0f;
+                //mover.Velocity = new Vector3(0, 0, 0);
+                acceleration = new Vector3(0.01f, 0.0f, 0.0f);
+                mover.Velocity.x *= -1;
+                mover.Velocity.Clamp(100);
+            }
+           
+
+
+
+
+
+
+            gl.DrawText(20, 20, 1, 0, 0, "Arial", 25, "" + mover.Velocity.x + " kph");
+
         }
 
        

@@ -74,5 +74,26 @@ namespace aplimat_labs
 
             return new Vector3(x, y, z);
         }
+
+        public void Clamp(Vector3 limit)
+        {
+            if (this.x >= limit.x) this.x = limit.x;
+            if (this.y >= limit.y) this.y = limit.y;
+            if (this.z >= limit.z) this.z = limit.z;
+        }
+
+        public void Clamp(float limit)
+        {
+            if (this.x >= limit) this.x = limit;
+            if (this.y >= limit) this.y = limit;
+            if (this.z >= limit) this.z = limit;
+        }
+
+        public void Floor(float minimum)
+        {
+            if (this.x <= minimum) this.x = minimum;
+            if (this.y <= minimum) this.y = minimum;
+            if (this.z <= minimum) this.z = minimum;
+        }
     }
 }
