@@ -38,13 +38,10 @@ namespace aplimat_labs
         private Randomizer rng = new Randomizer(-20, 20);
         private Randomizer colorRNG = new Randomizer(-255, 255);
 
-        private CubeMesh myCube = new CubeMesh();
-        private Vector3 velocity = new Vector3(1, 1, 0);
-        private float speed = 5.0f;
-
         private Vector3 myVector = new Vector3();
         private Vector3 a = new Vector3(5, 7, 0);
         private Vector3 b = new Vector3(0, 0, 0);
+        private Vector3 mousePos = new Vector3();
 
 
       
@@ -56,30 +53,62 @@ namespace aplimat_labs
             // Clear The Screen And The Depth Buffer
             gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
 
-            double mouseX = Mouse.GetPosition(Application.Current.MainWindow).X;
-            double mouseY = Mouse.GetPosition(Application.Current.MainWindow).Y;
+           
             // Move Left And Into The Screen
             gl.LoadIdentity();
             gl.Translate(0.0f, 0.0f, -40.0f);
 
 
+            mousePos.Normalize();
+            mousePos *= 10;
 
 
-            gl.Color(255.0, 255.0, 255.0);
-       
-            gl.Begin(OpenGL.GL_LINE_STRIP);
-            gl.Vertex(a.x, a.y, a.z);
-            gl.Vertex(mouseX, mouseY, 0);
-            gl.End();
-
-            gl.Color(0.0, 0.0, 255.0);
+            //blue
+            gl.Color(1.0f, 1.0f, 1.0f, 0.2f);
             gl.LineWidth(15);
             gl.Begin(OpenGL.GL_LINE_STRIP);
-            gl.Vertex(a.x, a.y, a.z);
-            gl.Vertex(mouseX, mouseY, 0);
+            gl.Vertex(0, 0, 0);
+            gl.Vertex(mousePos.x, mousePos.y, 0);
             gl.End();
 
-            
+            gl.Color(0.0f, 0.0f, 1.0f);
+            gl.LineWidth(5);
+            gl.Begin(OpenGL.GL_LINE_STRIP);
+            gl.Vertex(0, 0, 0);
+            gl.Vertex(mousePos.x, mousePos.y, 0);
+            gl.End();
+
+            //red
+            gl.Color(1.0f, 1.0f, 1.0f, 0.2f);
+            gl.LineWidth(15);
+            gl.Begin(OpenGL.GL_LINE_STRIP);
+            gl.Vertex(10, 10, 0);
+            gl.Vertex(mousePos.x, mousePos.y, 0);
+            gl.End();
+
+            gl.Color(1.0f, 0.0f, 0.0f);
+            gl.LineWidth(5);
+            gl.Begin(OpenGL.GL_LINE_STRIP);
+            gl.Vertex(10, 10, 0);
+            gl.Vertex(mousePos.x, mousePos.y, 0);
+            gl.End();
+
+            //green
+            gl.Color(1.0f, 1.0f, 1.0f, 0.2f);
+            gl.LineWidth(15);
+            gl.Begin(OpenGL.GL_LINE_STRIP);
+            gl.Vertex(10, 10, 0);
+            gl.Vertex(mousePos.x, mousePos.y, 0);
+            gl.End();
+
+            gl.Color(0.0f, 1.0f, 0.0f);
+            gl.LineWidth(5);
+            gl.Begin(OpenGL.GL_LINE_STRIP);
+            gl.Vertex(0, 0, 0);
+            gl.Vertex(10, 10, 0);
+            gl.End();
+
+
             if (Keyboard.IsKeyDown(Key.W))
             {
                 a.x *= 2;
@@ -136,6 +165,18 @@ namespace aplimat_labs
             gl.Disable(OpenGL.GL_LIGHT0);
 
             gl.ShadeModel(OpenGL.GL_SMOOTH);
+        }
+
+        private void OpenGLControl_MouseMove(object sender, MouseEventArgs e)
+        {
+            //mousePos = new Vector3(e.GetPosition(this).X, e.GetPosition(this).Y,0);
+
+            var pos = e.GetPosition(this);
+            mousePos.x = (float)pos.X - (float)Width / 2.0f;
+            mousePos.y = (float)pos.Y - (float)Height / 2.0f;
+
+            mousePos.y = -mousePos.y;
+
         }
     }
 }

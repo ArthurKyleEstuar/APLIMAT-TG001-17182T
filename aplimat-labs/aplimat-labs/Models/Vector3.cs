@@ -63,5 +63,16 @@ namespace aplimat_labs
         {
             return (float)Math.Sqrt((x * x) + (y * y) + (z * z));
         }
+
+        public Vector3 Normalize()
+        {
+            float length = GetMagnitude();
+
+            if(this.x != 0) this.x /= length;
+            if (this.y != 0) this.y /= length;
+            if (this.z != 0) this.z /= length;
+
+            return new Vector3(x, y, z);
+        }
     }
 }
