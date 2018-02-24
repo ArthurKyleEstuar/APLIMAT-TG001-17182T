@@ -27,63 +27,86 @@ namespace aplimat_labs
         public MainWindow()
         {
             InitializeComponent();
-
-            //while (true) Console.WriteLine(rng.Generate());
         }
 
-        private CubeMesh mover = new CubeMesh(-25, 0, 0);
-        private Vector3 acceleration = new Vector3(0.01f, 0.0f, 0.0f);
-        private Vector3 mousePos = new Vector3();
-        private int frameCount = 0;
+        private CubeMesh lightCube = new CubeMesh()
+        {
+            Position = new Vector3(-25, 0, 0)
+        };
+
+        private CubeMesh heavyCube = new CubeMesh()
+        {
+            Position = new Vector3(-25, -5, 0),
+            Mass = 3
+        };
+        private CubeMesh leadCube = new CubeMesh()
+        {
+            Position = new Vector3(-25, 5, 0),
+            Mass = 10
+        };
+
+        private Vector3 gravity = new Vector3(0, -0.05f, 0);
+        private Vector3 wind = new Vector3(0.05f, 0, 0);
 
         private void OpenGLControl_OpenGLDraw(object sender, SharpGL.SceneGraph.OpenGLEventArgs args)
         {
+#region UpdateStart
             OpenGL gl = args.OpenGL;
-            bool bounced = false;
+
             // Clear The Screen And The Depth Buffer
             gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
 
-           
             // Move Left And Into The Screen
             gl.LoadIdentity();
             gl.Translate(0.0f, 0.0f, -40.0f);
+            #endregion
+            //Draw and Color
+            gl.Color(1.0, 0.0, 0.0);
+            lightCube.Draw(gl);
+            gl.Color(0.0, 1.0, 0.0);
+            heavyCube.Draw(gl);
+            gl.Color(0.0, 0.0, 1.0);
+            leadCube.Draw(gl);
 
-            mover.Draw(gl);
-            mover.Velocity += acceleration;
-            frameCount++;
+            //Apply Gravity
+            lightCube.ApplyForce(gravity);
+            heavyCube.ApplyForce(gravity);
+            leadCube.ApplyForce(gravity);
 
-            if (mover.Position.x >= 25)
+            //Apply Wind
+            lightCube.ApplyForce(wind);
+            heavyCube.ApplyForce(wind);
+            leadCube.ApplyForce(wind);
+
+            //LightCube Border Checks
+            if (lightCube.Position.x >= 25)
             {
- 
-                mover.Velocity.x *= -1;
-                acceleration = new Vector3(0.02f, 0.0f, 0.0f);//this will be my boolean
+                lightCube.BounceX();
             }
-
-            if (acceleration.x == 0.02f) mover.Velocity.Clamp(0);
-
-           
-
-            if (frameCount >= 200)
-            {//reset application
-                frameCount = 0;
-                mover.Position.x = -25.0f;
-                //mover.Velocity = new Vector3(0, 0, 0);
-                acceleration = new Vector3(0.01f, 0.0f, 0.0f);
-                mover.Velocity.x *= -1;
-                mover.Velocity.Clamp(100);
+            if (lightCube.Position.y <= -15)
+            {
+                lightCube.BounceY();
             }
-           
-
-
-
-
-
-
-            gl.DrawText(20, 20, 1, 0, 0, "Arial", 25, "" + mover.Velocity.x + " kph");
-
+            //HeavyCube Border Checks
+            if (heavyCube.Position.x >= 25)
+            {
+                heavyCube.BounceX();
+            }
+            if (heavyCube.Position.y <= -15)
+            {
+                heavyCube.BounceY();
+            }
+            //Lead Cube Border Checks
+            if (leadCube.Position.x >= 25)
+            {
+                leadCube.BounceX();
+            }
+            if (leadCube.Position.y <= -15)
+            {
+                leadCube.BounceY();
+            }
         }
-
-       
+#region OpenGLInit
 
         private void OpenGLControl_OpenGLInitialized(object sender, SharpGL.SceneGraph.OpenGLEventArgs args)
         {
@@ -110,17 +133,12 @@ namespace aplimat_labs
 
             gl.ShadeModel(OpenGL.GL_SMOOTH);
         }
+        #endregion
 
+#region MouseControl
         private void OpenGLControl_MouseMove(object sender, MouseEventArgs e)
-        {
-            //mousePos = new Vector3(e.GetPosition(this).X, e.GetPosition(this).Y,0);
-
-            var pos = e.GetPosition(this);
-            mousePos.x = (float)pos.X - (float)Width / 2.0f;
-            mousePos.y = (float)pos.Y - (float)Height / 2.0f;
-
-            mousePos.y = -mousePos.y;
-
+        {           
         }
+        #endregion
     }
 }

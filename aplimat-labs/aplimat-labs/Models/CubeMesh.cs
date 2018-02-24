@@ -57,12 +57,27 @@ namespace aplimat_labs
             gl.Vertex(this.Position.x + 0.5f, this.Position.y - 0.5f, this.Position.z - 0.5f);
             gl.End();
 
-            ApplyVelocity();
+            UpdateMotion();
         }
 
-        private void ApplyVelocity()
+        private void UpdateMotion()
         {
-            this.Position += Velocity;
+            this.Velocity += this.Acceleration;
+            this.Position += this.Velocity;
+            this.Acceleration *= 0;
         }
+
+        public void BounceX()
+        {//When need to Bounce object on X axis
+            this.Velocity.x *= -1;
+            this.Acceleration *= 0;
+        }
+
+        public void BounceY()
+        {//When need to Bounce object on Y axis
+            this.Velocity.y *= -1;
+            this.Acceleration *= 0;
+        }
+
     }
 }
